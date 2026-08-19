@@ -123,7 +123,7 @@ namespace cakeslice.SimpleWebRTC
 								continue;
 							}
 
-							Connection conn = new Connection(iceServers, GetNextId(), maxMessageSize, req.RemoteEndPoint.ToString(), AfterConnectionDisposed);
+							Connection conn = Common.RunOnMainThread(() => new Connection(iceServers, GetNextId(), maxMessageSize, req.RemoteEndPoint.ToString(), AfterConnectionDisposed));
 							Connection.Config receiveConfig = new Connection.Config(
 									conn,
 									maxMessageSize,
@@ -203,20 +203,40 @@ namespace cakeslice.SimpleWebRTC
 			connections.Clear();
 		}
 
+		private static RTCSessionDescriptionAsyncOperation CreateOfferOnMainThread(Connection connection)
+		{
+			RTCOfferAnswerOptions options = new RTCOfferAnswerOptions();
+			return connection.client.CreateOffer(ref options);
+		}
+
+		private static RTCSetSessionDescriptionAsyncOperation SetLocalDescriptionOnMainThread(Connection connection, RTCSessionDescription description)
+		{
+			return connection.client.SetLocalDescription(ref description);
+		}
+
+		private static RTCSetSessionDescriptionAsyncOperation SetRemoteDescriptionOnMainThread(Connection connection, RTCSessionDescription description)
+		{
+			return connection.client.SetRemoteDescription(ref description);
+		}
+
+		private static void AddIceCandidateOnMainThread(Connection connection, RTCIceCandidateInit candidate)
+		{
+			connection.client.AddIceCandidate(new RTCIceCandidate(candidate));
+		}
+
 		void GetOfferThread(Connection conn, HttpListenerRequest req, HttpListenerResponse resp)
 		{
 			bool dispose = false;
 
 			try
 			{
-				RTCOfferAnswerOptions options = new RTCOfferAnswerOptions();
-				RTCSessionDescriptionAsyncOperation offerOp = conn.client.CreateOffer(ref options);
+				RTCSessionDescriptionAsyncOperation offerOp = Common.RunOnMainThread(() => CreateOfferOnMainThread(conn));
 				while (offerOp.MoveNext())
 				{
 
 				}
 				RTCSessionDescription desc = offerOp.Desc;
-				var localDescOp = conn.client.SetLocalDescription(ref desc);
+				var localDescOp = Common.RunOnMainThread(() => SetLocalDescriptionOnMainThread(conn, desc));
 				while (localDescOp.MoveNext())
 				{
 
@@ -283,7 +303,7 @@ namespace cakeslice.SimpleWebRTC
 						type = RTCSdpType.Answer
 					};
 					RTCSetSessionDescriptionAsyncOperation answerOp =
-						conn.client.SetRemoteDescription(ref answerDescription);
+						Common.RunOnMainThread(() => SetRemoteDescriptionOnMainThread(conn, answerDescription));
 					while (answerOp.MoveNext())
 					{
 
@@ -295,7 +315,7 @@ namespace cakeslice.SimpleWebRTC
 						i.candidate = c;
 						i.sdpMid = "0";
 						i.sdpMLineIndex = 0;
-						conn.client.AddIceCandidate(new RTCIceCandidate(i));
+						Common.RunOnMainThread(() => AddIceCandidateOnMainThread(conn, i));
 					}
 
 					// Wait one second to gather candidates

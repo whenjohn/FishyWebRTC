@@ -1,10 +1,45 @@
 using System.Threading;
 using System;
+using System.Collections.Concurrent;
 
 namespace cakeslice.SimpleWebRTC
 {
 	public static class Common
 	{
+		private static readonly ConcurrentQueue<Action> MainThreadQueue = new ConcurrentQueue<Action>();
+		private static int _mainThreadId;
+
+		public static void InitializeMainThread()
+		{
+			_mainThreadId = Thread.CurrentThread.ManagedThreadId;
+		}
+
+		public static void ExecuteMainThreadQueue()
+		{
+			while (MainThreadQueue.TryDequeue(out Action action))
+				action();
+		}
+
+		public static T RunOnMainThread<T>(Func<T> action)
+		{
+			if (Thread.CurrentThread.ManagedThreadId == _mainThreadId)
+				return action();
+
+			using ManualResetEventSlim completed = new ManualResetEventSlim(false);
+			T result = default;
+			Exception exception = null;
+			MainThreadQueue.Enqueue(() =>
+			{
+				try { result = action(); }
+				catch (Exception caught) { exception = caught; }
+				finally { completed.Set(); }
+			});
+			completed.Wait();
+			if (exception != null)
+				throw exception;
+			return result;
+		}
+
 		[System.Serializable]
 		public class ICEServer
 		{

@@ -110,6 +110,7 @@ namespace FishNet.Transporting.FishyWebRTC
 		#region Initialization and unity.
 		private void Awake()
 		{
+			Common.InitializeMainThread();
 			StartCoroutine(WebRTC.Update());
 		}
 
@@ -121,6 +122,7 @@ namespace FishNet.Transporting.FishyWebRTC
 #if !UNITY_WEBGL || UNITY_EDITOR
 		private void Update()
 		{
+			Common.ExecuteMainThreadQueue();
 			WebRTC.ExecutePendingTasks(1);
 		}
 #endif
