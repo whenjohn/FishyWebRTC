@@ -19,9 +19,7 @@ Limitations:
 Installation: 
 - Add `https://github.com/Unity-Technologies/com.unity.webrtc.git#3.0.0-pre.5` using the Package Manager (Add from git URL)
   - For now only `3.0.0-pre.5` is supported
-- Add `ENABLE_WEBRTC` to define symbols in Player settings
-- Copy this folder to `Assets/FishNet/Runtime/Transporting/Transports/`
-- Modify the assembly definition `Assets/FishNet/Runtime/FishNet.Runtime.asmdef` to include the `SimpleWebRTC` assembly:
+- Add this package from the compatibility branch; it owns its assembly references and does not require an `ENABLE_WEBRTC` symbol.
 <img width="340" alt="example_assembly" src="https://user-images.githubusercontent.com/7516142/233031099-2ab4053f-e0c2-4191-8ceb-73f9fbaa1811.png">
 
 - Add the `FishyWebRTC` transport component and use it in your `TransportManager`:
