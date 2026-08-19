@@ -40,6 +40,15 @@ namespace cakeslice.SimpleWebRTC
 			return result;
 		}
 
+		public static void RunOnMainThread(Action action)
+		{
+			RunOnMainThread(() =>
+			{
+				action();
+				return true;
+			});
+		}
+
 		[System.Serializable]
 		public class ICEServer
 		{
