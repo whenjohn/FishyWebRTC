@@ -108,6 +108,11 @@ namespace FishNet.Transporting.FishyWebRTC
 		#endregion
 
 		#region Initialization and unity.
+		private void Awake()
+		{
+			StartCoroutine(WebRTC.Update());
+		}
+
 		protected void OnDestroy()
 		{
 			Shutdown();
