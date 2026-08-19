@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using cakeslice.SimpleWebRTC;
+using FishNet.Managing;
 
 namespace FishNet.Transporting.FishyWebRTC.Client
 {

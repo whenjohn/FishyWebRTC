@@ -305,8 +305,7 @@ namespace FishNet.Transporting.FishyWebRTC
 #if !UNITY_WEBGL || UNITY_EDITOR
 			if (_server.GetConnectionState() != LocalConnectionState.Stopped)
 			{
-				if (base.NetworkManager.CanLog(LoggingType.Warning))
-					Debug.LogWarning($"Cannot set maximum clients when server is running.");
+				base.NetworkManager.LogWarning($"Cannot set maximum clients when server is running.");
 			}
 			else
 			{
@@ -483,8 +482,7 @@ namespace FishNet.Transporting.FishyWebRTC
 		{
 			if (channelId < 0 || channelId >= TransportManager.CHANNEL_COUNT)
 			{
-				if (NetworkManager.CanLog(LoggingType.Warning))
-					Debug.LogWarning($"Channel of {channelId} is out of range of supported channels. Channel will be defaulted to reliable.");
+				NetworkManager.LogWarning($"Channel of {channelId} is out of range of supported channels. Channel will be defaulted to reliable.");
 				channelId = 0;
 			}
 		}
