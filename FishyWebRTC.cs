@@ -5,6 +5,9 @@ using FishNet.Managing.Logging;
 using FishNet.Managing.Transporting;
 using System;
 using System.Runtime.CompilerServices;
+#if !UNITY_WEBGL || UNITY_EDITOR
+using Unity.WebRTC;
+#endif
 using UnityEngine;
 using System.Collections.Generic;
 using cakeslice.SimpleWebRTC;
@@ -113,7 +116,7 @@ namespace FishNet.Transporting.FishyWebRTC
 #if !UNITY_WEBGL || UNITY_EDITOR
 		private void Update()
 		{
-			WebRtcTasks.ExecutePendingTasks();
+			WebRTC.ExecutePendingTasks(1);
 		}
 #endif
 		#endregion

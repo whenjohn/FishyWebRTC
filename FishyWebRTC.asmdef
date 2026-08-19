@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "FishNet.Runtime",
-        "SimpleWebRTC"
+        "SimpleWebRTC",
+        "Unity.WebRTC"
     ],
     "includePlatforms": [
         "Editor",
