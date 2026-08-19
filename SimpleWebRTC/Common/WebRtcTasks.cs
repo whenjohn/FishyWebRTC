@@ -3,9 +3,9 @@ using Unity.WebRTC;
 
 namespace cakeslice.SimpleWebRTC
 {
-	internal static class WebRtcTasks
+	public static class WebRtcTasks
 	{
-		internal static void ExecutePendingTasks()
+		public static void ExecutePendingTasks()
 		{
 			WebRTC.ExecutePendingTasks(1);
 		}
