@@ -5,6 +5,7 @@ using FishNet.Managing.Logging;
 using FishNet.Managing.Transporting;
 using System;
 using System.Runtime.CompilerServices;
+using Unity.WebRTC;
 using UnityEngine;
 using System.Collections.Generic;
 using cakeslice.SimpleWebRTC;
@@ -108,6 +109,11 @@ namespace FishNet.Transporting.FishyWebRTC
 		protected void OnDestroy()
 		{
 			Shutdown();
+		}
+
+		private void Update()
+		{
+			WebRTC.ExecutePendingTasks(1);
 		}
 		#endregion
 
