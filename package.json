@@ -10,7 +10,7 @@
       "url": ""
    },
    "dependencies": {
-      "com.unity.webrtc": "https://github.com/Unity-Technologies/com.unity.webrtc.git#3.0.0-pre.8",
+      "com.unity.webrtc": "https://github.com/whenjohn/com.unity.webrtc.git#ac2faeacd74b5ac8c76be70308bd81520fe4995c",
       "com.unity.nuget.newtonsoft-json": "3.0.2"
    },
    "samples": []
