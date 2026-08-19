@@ -32,15 +32,6 @@ function ConnectRTC(
    messageCallbackPtr,
    errorCallbackPtr
 ) {
-   // Fix for unity 2021 because unity bug in .jslib
-   if (typeof Runtime === "undefined") {
-      // If unity doesn't create Runtime, then make it here
-      // don't ask why this works, just be happy that it does
-      Runtime = {
-         dynCall: dynCall,
-      };
-   }
-
    const fetchTimeout = 5000;
 
    let offerAddress = UTF8ToString(addressPtr);
@@ -80,10 +71,10 @@ function ConnectRTC(
          // We don't trigger the connected callback here because we still need the data channels to be ready
       } else if (peerConnection.connectionState === "closed") {
          console.log("Disconnected from " + addressPtr);
-         Runtime.dynCall("vi", closeCallBackPtr, [index]);
+         {{{ makeDynCall('vi', 'closeCallBackPtr') }}}(index);
       } else if (peerConnection.connectionState === "failed") {
          console.error("WebRTC PeerConnection error");
-         Runtime.dynCall("vi", errorCallbackPtr, [index]);
+         {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
       }
    });
 
@@ -120,13 +111,13 @@ function ConnectRTC(
    const fetchError = (e) => {
       console.error("Fetch error: " + e);
       setTimeout(() => {
-         Runtime.dynCall("vi", errorCallbackPtr, [index]);
+         {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
       }, 100);
    };
 
    try {
       const offerTimeout = setTimeout(() => {
-         Runtime.dynCall("vi", errorCallbackPtr, [index]);
+         {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
       }, fetchTimeout);
       fetch(offerAddress, {
          method: "GET",
@@ -151,9 +142,7 @@ function ConnectRTC(
                         .then(function () {
                            setTimeout(() => {
                               const answerTimeout = setTimeout(() => {
-                                 Runtime.dynCall("vi", errorCallbackPtr, [
-                                    index,
-                                 ]);
+                                 {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
                               }, fetchTimeout);
 
                               fetch(answerAddress, {
@@ -175,9 +164,7 @@ function ConnectRTC(
                                  })
                                  .then((obj) => {
                                     if (obj.candidates.length === 0) {
-                                       Runtime.dynCall("vi", errorCallbackPtr, [
-                                          index,
-                                       ]);
+                                       {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
                                        return console.error(
                                           "No ICE candidates found in the server"
                                        );
@@ -218,7 +205,7 @@ function ConnectRTC(
 
                if (channels.length == 2) {
                   // All channels open and ready, trigger connected callback
-                  Runtime.dynCall("vi", openCallbackPtr, [index]);
+                  {{{ makeDynCall('vi', 'openCallbackPtr') }}}(index);
                }
 
                dataChannel.addEventListener("error", (ev) => {
@@ -227,7 +214,7 @@ function ConnectRTC(
                      "WebRTC " + dataChannel.label + " DataChannel error: ",
                      err.message
                   );
-                  Runtime.dynCall("vi", errorCallbackPtr, [index]);
+                  {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
                });
 
                dataChannel.addEventListener("message", function (event) {
@@ -244,11 +231,7 @@ function ConnectRTC(
                      );
                      dataBuffer.set(array);
 
-                     Runtime.dynCall("viii", messageCallbackPtr, [
-                        index,
-                        bufferPtr,
-                        arrayLength,
-                     ]);
+                     {{{ makeDynCall('viii', 'messageCallbackPtr') }}}(index, bufferPtr, arrayLength);
                      _free(bufferPtr);
                   } else {
                      console.error("Message type not supported");
@@ -262,7 +245,7 @@ function ConnectRTC(
    } catch (e) {
       console.error(e);
       setTimeout(() => {
-         Runtime.dynCall("vi", errorCallbackPtr, [index]);
+         {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(index);
       }, 100);
    }
 
